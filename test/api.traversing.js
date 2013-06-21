@@ -352,4 +352,74 @@ describe('$(...)', function() {
 
   });
 
+  describe('.add', function() {
+
+    var $food;
+
+    before(function() {
+      $food = $.load(food)('#food');
+    });
+
+    it('(selector) : should add the matched elements to the section', function() {
+      var $collection = $food.add('.pear');
+
+      expect($collection).to.not.equal($food);
+      expect($collection.length).to.equal(2);
+      expect($collection.filter('#food').length).to.equal(1);
+      expect($collection.filter('.pear').length).to.equal(1);
+    });
+
+    it('(selector) : should add the matched elements to the section (honoring the original "root")', function() {
+      var $apple = $food.find('.apple');
+      var $collection = $apple.add('.pear');
+
+      expect($collection).to.not.equal($apple);
+      expect($collection.length).to.equal(2);
+      expect($collection.filter('.apple').length).to.equal(1);
+      expect($collection.filter('.pear').length).to.equal(1);
+    });
+
+    it('(selector, context) : should add the matched elements to the selection', function() {
+      var $apple = $food.find('.apple');
+      var $collection = $apple.add('#vegetables', $food);
+
+      expect($collection).to.not.equal($apple);
+      expect($collection.length).to.equal(2);
+      expect($collection.filter('.apple').length).to.equal(1);
+      expect($collection.filter('#vegetables').length).to.equal(1);
+    });
+
+    it('(elements) : ', function() {
+      var test1 = $('<div class="test1"></div>')[0];
+      var test2 = $('<div class="test2"></div>')[0];
+      var $collection = $food.add(test1, test2);
+
+      expect($collection).to.not.equal($food);
+      expect($collection.length).to.equal(3);
+      expect($collection.filter('#food').length).to.equal(1);
+      expect($collection.filter('.test1').length).to.equal(1);
+      expect($collection.filter('.test2').length).to.equal(1);
+    });
+
+    it('(html) : ', function() {
+      var $collection = $food.add('<div class="test"></div>');
+
+      expect($collection).to.not.equal($food);
+      expect($collection.length).to.equal(2);
+      expect($collection.filter('#food').length).to.equal(1);
+      expect($collection.filter('.test').length).to.equal(1);
+    });
+
+    it('(Cheerio object) : ', function() {
+      var $test = $('<div class="test">Me</div>');
+      var $collection = $food.add($test);
+
+      expect($collection).to.not.equal($food);
+      expect($collection.length).to.equal(2);
+      expect($collection.filter('#food').length).to.equal(1);
+      expect($collection.filter('.test').length).to.equal(1);
+    });
+
+  });
+
 });
