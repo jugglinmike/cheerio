@@ -130,18 +130,39 @@ $('li[class=orange]').html()
 ### Attributes
 Methods for getting and modifying attributes.
 
-#### .attr( name, value )
-Method for getting and setting attributes. Gets the attribute value for only the first element in the matched set. If you set an attribute's value to `null`, you remove that attribute. You may also pass a `map` and `function` like jQuery.
+#### .attr()
+
+Get the value of an attribute for the first element in the set of matched
+elements or set one or more attributes for every matched element.
+
+[`jQuery.fn.attr` on api.jquery.com](http://api.jquery.com/attr/)
+
+##### .attr( <string> name )
+
+Get the value of an attribute for the first element in the set of matched
+elements.
 
 ```js
-$('ul').attr('id')
-//=> fruits
-
-$('.apple').attr('id', 'favorite').html()
-//=> <li class="apple" id="favorite">Apple</li>
+> $('ul').attr('id')
+'fruits'
 ```
 
-> See http://api.jquery.com/attr/ for more information
+##### .attr( <string> name, <string|number> value )
+
+Set the attribute value for the set of matched elements. Specifying `null` as
+the attribute value will remove that attribute.
+
+```
+> $('.apple').attr('id', 'favorite').html()
+'<li class="apple" id="favorite">Apple</li>'
+```
+
+##### .attr( <string> name, function(<number> index, <string> value) )
+
+Set the attribute value for the set of matched elements using the result of the
+specified function. The function is invoked once for each element in the
+selection. It is provided with the element's index within the selection and the
+element's attribute value; its context is the element itself.
 
 #### .data( name, value )
 Method for getting and setting data attributes. Gets or sets the data attribute value for only the first element in the matched set. 
