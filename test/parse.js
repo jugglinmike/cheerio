@@ -269,7 +269,7 @@ describe('parse', function() {
 
     // root test utility
     function rootTest(root) {
-      expect(root.name).to.equal('root');
+      expect(root.name).to.equal('html');
 
       // Should exist but be null
       expect(root.next).to.be(null);
@@ -280,11 +280,15 @@ describe('parse', function() {
       expect(child.parent).to.equal(root);
     }
 
-    it('should add root to: ' + basic, function() {
+    it('should not add root to: ' + basic, function() {
       var root = parse(basic);
-      rootTest(root);
-      expect(root.children).to.have.length(1);
-      expect(root.children[0].name).to.equal('html');
+      expect(root.name).to.equal('html');
+
+      // Should exist but be null
+      expect(root.next).to.be(null);
+      expect(root.prev).to.be(null);
+      expect(root.parent).to.be(null);
+      expect(root.children).to.eql([]);
     });
 
     it('should add root to: ' + siblings, function() {
@@ -293,7 +297,7 @@ describe('parse', function() {
       expect(root.children).to.have.length(2);
       expect(root.children[0].name).to.equal('h2');
       expect(root.children[1].name).to.equal('p');
-      expect(root.children[1].parent.name).to.equal('root');
+      expect(root.children[1].parent.name).to.equal('html');
     });
 
     it('should add root to: ' + comment, function() {

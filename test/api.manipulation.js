@@ -499,8 +499,8 @@ describe('$(...)', function() {
       var $src = $('<ul></ul>');
       var $elem = $('<h2>hi <span>there</span></h2>');
       var $replaced = $src.replaceWith($elem);
-      expect($replaced[0].parent.type).to.equal('root');
-      expect($.html($replaced[0].parent)).to.equal('<h2>hi <span>there</span></h2>');
+      expect($replaced[0].parent.name).to.equal('html');
+      expect($.html($replaced[0].parent)).to.equal('<html><h2>hi <span>there</span></h2></html>');
       expect($.html($replaced)).to.equal('<ul></ul>');
     });
 
@@ -508,8 +508,8 @@ describe('$(...)', function() {
       var $src = $('<ul></ul>');
       var elem = $('<h2>hi <span>there</span></h2>');
       var $replaced = $src.replaceWith(elem);
-      expect($replaced[0].parent.type).to.equal('root');
-      expect($.html($replaced[0].parent)).to.equal('<h2>hi <span>there</span></h2>');
+      expect($replaced[0].parent.name).to.equal('html');
+      expect($.html($replaced[0].parent)).to.equal('<html><h2>hi <span>there</span></h2></html>');
       expect($.html($replaced)).to.equal('<ul></ul>');
     });
 
@@ -517,16 +517,16 @@ describe('$(...)', function() {
       var $src = $('<br/>');
       var $elem = $('<h2>hi <span>there</span></h2>');
       var $replaced = $src.replaceWith($elem);
-      expect($replaced[0].parent.type).to.equal('root');
-      expect($.html($replaced[0].parent)).to.equal('<h2>hi <span>there</span></h2>');
+      expect($replaced[0].parent.name).to.equal('html');
+      expect($.html($replaced[0].parent)).to.equal('<html><h2>hi <span>there</span></h2></html>');
       expect($.html($replaced)).to.equal('<br>');
     });
 
     it('(str) : should accept strings', function() {
       var $src = $('<br/>');
       var $replaced = $src.replaceWith('<h2>hi <span>there</span></h2>');
-      expect($replaced[0].parent.type).to.equal('root');
-      expect($.html($replaced[0].parent)).to.equal('<h2>hi <span>there</span></h2>');
+      expect($replaced[0].parent.name).to.equal('html');
+      expect($.html($replaced[0].parent)).to.equal('<html><h2>hi <span>there</span></h2></html>');
       expect($.html($replaced)).to.equal('<br>');
     });
 
