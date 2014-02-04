@@ -30,6 +30,23 @@ describe('$(...)', function() {
       expect($fruits.children(3).hasClass('plum')).to.be.ok();
     });
 
+    it('(Node) : should add node as last child of each matched element', function() {
+      var $fruits = $(fruits);
+      var plum = $('<li class="plum">Plum</li>')[0];
+      $fruits.children().append(plum);
+
+      expect($('.apple .plum', $fruits)).to.have.length(1);
+      expect($('.apple .plum', $fruits)[0]).not.to.be(plum);
+      expect($('.orange .plum', $fruits)).to.have.length(1);
+      expect($('.orange .plum', $fruits)[0]).not.to.be(plum);
+
+      // From [the API docs on `$.fn.append`](http://api.jquery.com/append/):
+      // If there is more than one target element, however, cloned copies of
+      // the inserted element will be created for each target except for the
+      // last one.
+      expect($('.pear .plum', $fruits)[0]).to.be(plum);
+    });
+
     it('($(...), html) : should add multiple elements as last children', function() {
       var $fruits = $(fruits);
       var $plum = $('<li class="plum">Plum</li>');
@@ -156,6 +173,23 @@ describe('$(...)', function() {
       var plum = $('<li class="plum">Plum</li>')[0];
       $fruits.prepend(plum);
       expect($fruits.children(0).hasClass('plum')).to.be.ok();
+    });
+
+    it('(Node) : should add node as first child of each matched element', function() {
+      var $fruits = $(fruits);
+      var plum = $('<li class="plum">Plum</li>')[0];
+      $fruits.children().prepend(plum);
+
+      expect($('.apple .plum', $fruits)).to.have.length(1);
+      expect($('.apple .plum', $fruits)[0]).to.not.be(plum);
+      expect($('.orange .plum', $fruits)).to.have.length(1);
+      expect($('.orange .plum', $fruits)[0]).to.not.be(plum);
+      expect($('.pear .plum', $fruits)).to.have.length(1);
+
+      // From [the API docs on `$.fn.prpend`](http://api.jquery.com/prepend/):
+      // es more than one target element, however, cloned copies of the
+      // inserted element will be created for each target after the first.
+      expect($('.pear .plum', $fruits)[0]).to.be(plum);
     });
 
     it('(Array) : should add all elements in the array as inital children', function() {
@@ -287,6 +321,19 @@ describe('$(...)', function() {
       expect($('.apple', $fruits).next().hasClass('plum')).to.be.ok();
     });
 
+    it('(Node) : should add node as next sibling of each matched element', function() {
+      var $fruits = $(fruits);
+      var plum = $('<li class="plum">Plum</li>')[0];
+      $fruits.children().after(plum);
+
+      expect($fruits.children()).to.have.length(6);
+      expect($('.apple + .plum', $fruits)).to.have.length(1);
+      expect($('.apple + .plum', $fruits)[0]).not.to.be(plum);
+      expect($('.orange + .plum', $fruits)).to.have.length(1);
+      expect($('.orange + .plum', $fruits)[0]).not.to.be(plum);
+      expect($('.pear + .plum', $fruits)[0]).to.be(plum);
+    });
+
     it('($(...), html) : should add multiple elements as next siblings', function() {
       var $fruits = $(fruits);
       var $plum = $('<li class="plum">Plum</li>');
@@ -380,6 +427,17 @@ describe('$(...)', function() {
       var plum = $('<li class="plum">Plum</li>');
       $('.apple', $fruits).before(plum);
       expect($('.apple', $fruits).prev().hasClass('plum')).to.be.ok();
+    });
+
+    it('(Node) : should add node as previous sibling of each matched element', function() {
+      var $fruits = $(fruits);
+      var plum = $('<li class="plum">Plum</li>')[0];
+      $fruits.children().before(plum);
+
+      expect($fruits.children()).to.have.length(6);
+      expect($('.apple', $fruits).prev().hasClass('plum')).to.be.ok();
+      expect($('.orange', $fruits).prev().hasClass('plum')).to.be.ok();
+      expect($('.pear', $fruits).prev()[0]).to.be(plum);
     });
 
     it('(Array) : should add all elements in the array as previous sibling', function() {
@@ -520,6 +578,16 @@ describe('$(...)', function() {
       expect($new[0].parent).to.equal($src[0]);
       expect($replaced[0].parent).to.equal(null);
       expect($.html($src)).to.equal('<h2>hi <div>here</div></h2>');
+    });
+
+    it('(Node) : should replace each selected elements with the node', function() {
+      var $src = $('<div><span></span><span></span></div>');
+      var p = $('<p>')[0];
+      $src.find('span').replaceWith(p);
+
+      expect($src.find('p')).to.have.length(2);
+      expect($src.find('p')[0]).not.to.be(p);
+      expect($src.find('p')[1]).to.be(p);
     });
 
     it('(str) : should accept strings', function() {
