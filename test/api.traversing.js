@@ -901,4 +901,17 @@ describe('$(...)', function() {
     });
   });
 
+  describe('.addBack', function() {
+    var $fruits;
+
+    beforeEach(function() {
+      $fruits = $(fruits);
+    });
+
+    it('() : should add the previous selection to the current', function() {
+      var $parent = $fruits;
+      expect($fruits.children().addBack()[4]).to.be($parent[0]);
+    });
+  });
+
 });
