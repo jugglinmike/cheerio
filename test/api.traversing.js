@@ -569,6 +569,13 @@ describe('$(...)', function() {
       expect(result[0].attribs.id).to.be('fruits');
     });
 
+    it('(element) : should return all parents until the specified element', function() {
+      var $fruits = $('#fruits');
+      var $until = $('#food');
+      var result = $fruits.children().eq(1).parentsUntil($until[0]);
+      expect(result).to.have.length(1);
+      expect(result[0].attribs.id).to.be('fruits');
+    });
   });
 
   describe('.parent', function() {
