@@ -310,6 +310,10 @@ describe('$(...)', function() {
       var val = $('select#multi').val();
       expect(val).to.have.length(2);
     });
+    it('.val(): on textarea element should return the text contents', function() {
+      var $textarea = $('<textarea>This is some text</textarea>');
+      expect($textarea.val()).to.be('This is some text');
+    });
     it('.val(value): on input text should set value', function() {
       var element = $('input[type="text"]').val('test');
       expect(element.val()).to.equal('test');
