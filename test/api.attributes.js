@@ -282,6 +282,9 @@ describe('$(...)', function() {
       $ = cheerio.load(inputs);
     });
 
+    it('.val(): on empty selection should return `undefined`', function() {
+      expect($().val()).to.be(undefined);
+    });
     it('.val(): on select should get value', function() {
       var val = $('select#one').val();
       expect(val).to.equal('option_selected');
