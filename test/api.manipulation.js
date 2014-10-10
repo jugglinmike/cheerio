@@ -839,6 +839,15 @@ describe('$(...)', function() {
       expect(html).to.equal('<li class="durian">Durian</li>');
     });
 
+    it('(existing element) : should move the existing element', function() {
+      $('.apple').html($('.pear')[0]);
+
+      expect($('.apple').children()).to.have.length(1);
+      expect($('.apple').children()[0]).to.be($('.pear')[0]);
+      expect($fruits.children()).to.have.length(2);
+      expect($('.orange').next()).to.have.length(0);
+    });
+
     it('() : should allow element reinsertion', function() {
       var $children = $fruits.children();
 
