@@ -833,7 +833,7 @@ describe('$(...)', function() {
       expect(tested).to.equal(3);
     });
 
-    it('(elem) : should set the html for its children with element', function() {
+    it('(Cheerio object) : should set the html for its children with element', function() {
       $fruits.html($('<li class="durian">Durian</li>'));
       var html = $fruits.html();
       expect(html).to.equal('<li class="durian">Durian</li>');
