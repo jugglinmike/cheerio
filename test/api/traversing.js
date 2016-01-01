@@ -1104,13 +1104,17 @@ describe('$(...)', function() {
   });
 
   describe('.add', function() {
-    var $ = cheerio.load(food);
-    var $fruits = $('#fruits');
-    var $apple = $('.apple');
-    var $orange = $('.orange');
-    var $pear = $('.pear');
-    var $carrot = $('.carrot');
-    var $sweetcorn = $('.sweetcorn');
+    var $fruits, $apple, $orange, $pear, $carrot, $sweetcorn;
+
+    beforeEach(function() {
+      $ = cheerio.load(food);
+      $fruits = $('#fruits');
+      $apple = $('.apple');
+      $orange = $('.orange');
+      $pear = $('.pear');
+      $carrot = $('.carrot');
+      $sweetcorn = $('.sweetcorn');
+    });
 
     describe('(selector', function() {
       describe(') :', function() {
