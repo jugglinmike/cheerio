@@ -355,16 +355,16 @@ describe('cheerio', function() {
       expect(q('ul')).to.have.length(3);
     });
 
-    it('should render xml in html() when options.xmlMode = true', function() {
+    it.only('should render xml in html() when options.xml = true', function() {
       var str = '<MixedCaseTag UPPERCASEATTRIBUTE=""></MixedCaseTag>',
           expected = '<MixedCaseTag UPPERCASEATTRIBUTE=""/>',
-          dom = $.load(str, {xmlMode: true});
+          dom = $.load(str, {xml: true});
 
       expect(dom('MixedCaseTag').get(0).tagName).to.equal('MixedCaseTag');
       expect(dom.html()).to.be(expected);
     });
 
-    it('should render xml in html() when options.xmlMode = true passed to html()', function() {
+    it('should render xml in html() when options.xml = true passed to html()', function() {
       var str = '<MixedCaseTag UPPERCASEATTRIBUTE=""></MixedCaseTag>',
           // since parsing done without xmlMode flag, all tags converted to lowercase
           expectedXml = '<html><head/><body><mixedcasetag uppercaseattribute=""/></body></html>',
@@ -373,7 +373,7 @@ describe('cheerio', function() {
 
       expect(dom('MixedCaseTag').get(0).tagName).to.equal('mixedcasetag');
       expect(dom.html()).to.be(expectedNoXml);
-      expect(dom.html({xmlMode: true})).to.be(expectedXml);
+      expect(dom.html({xml: true})).to.be(expectedXml);
     });
 
     it('should respect options on the element level', function() {
