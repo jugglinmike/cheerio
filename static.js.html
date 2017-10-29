@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: static.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: static.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @module static
+ */
+
+var serialize = require('dom-serializer'),
+    defaultOptions = require('./options').default,
+    flattenOptions = require('./options').flatten,
+    select = require('css-select'),
+    parse = require('./parse'),
+    _ = {
+      merge: require('lodash/merge'),
+      defaults: require('lodash/defaults')
+    };
+
+/**
+ * Create a querying function, bound to a document created from the provided
+ * markup. Note that similar to web browser contexts, this operation may
+ * introduce `&lt;html>`, `&lt;head>`, and `&lt;body>` elements. See the previous
+ * section titled "Loading" for usage information.
+ */
+exports.load = function(content, options, isDocument) {
+  var Cheerio = require('./cheerio');
+
+  options = _.defaults(flattenOptions(options || {}), defaultOptions);
+
+  if (isDocument === void 0)
+    isDocument = true;
+
+  var root = parse(content, options, isDocument);
+
+  var initialize = function(selector, context, r, opts) {
+    if (!(this instanceof initialize)) {
+      return new initialize(selector, context, r, opts);
+    }
+    opts = _.defaults(opts || {}, options);
+    return Cheerio.call(this, selector, context, r || root, opts);
+  };
+
+  // Ensure that selections created by the "loaded" `initialize` function are
+  // true Cheerio instances.
+  initialize.prototype = Object.create(Cheerio.prototype);
+  initialize.prototype.constructor = initialize;
+
+  // Mimic jQuery's prototype alias for plugin authors.
+  initialize.fn = initialize.prototype;
+
+  // Keep a reference to the top-level scope so we can chain methods that implicitly
+  // resolve selectors; e.g. $("&lt;span>").(".bar"), which otherwise loses ._root
+  initialize.prototype._originalRoot = root;
+
+  // Add in the static methods
+  _.merge(initialize, exports);
+
+  // Add in the root
+  initialize._root = root;
+  // store options
+  initialize._options = options;
+
+  return initialize;
+};
+
+/*
+* Helper function
+*/
+
+function render(that, dom, options) {
+  if (!dom) {
+    if (that._root &amp;&amp; that._root.children) {
+      dom = that._root.children;
+    } else {
+      return '';
+    }
+  } else if (typeof dom === 'string') {
+    dom = select(dom, that._root, options);
+  }
+
+  return serialize(dom, options);
+}
+
+/**
+ * $.html([selector | dom], [options])
+ */
+
+exports.html = function(dom, options) {
+  // be flexible about parameters, sometimes we call html(),
+  // with options as only parameter
+  // check dom argument for dom element specific properties
+  // assume there is no 'length' or 'type' properties in the options object
+  if (Object.prototype.toString.call(dom) === '[object Object]' &amp;&amp; !options &amp;&amp; !('length' in dom) &amp;&amp; !('type' in dom))
+  {
+    options = dom;
+    dom = undefined;
+  }
+
+  // sometimes $.html() used without preloading html
+  // so fallback non existing options to the default ones
+  options = _.defaults(flattenOptions(options || {}), this._options, defaultOptions);
+
+  return render(this, dom, options);
+};
+
+/**
+ * $.xml([selector | dom])
+ */
+
+exports.xml = function(dom) {
+  var options = _.defaults({xml: true}, this._options);
+
+  return render(this, dom, options);
+};
+
+/**
+ * $.text(dom)
+ */
+
+exports.text = function(elems) {
+  if (!elems) {
+    elems = this.root();
+  }
+
+  var ret = '',
+      len = elems.length,
+      elem;
+
+  for (var i = 0; i &lt; len; i++) {
+    elem = elems[i];
+    if (elem.type === 'text') ret += elem.data;
+    else if (elem.children &amp;&amp; elem.type !== 'comment' &amp;&amp; elem.tagName !== 'script' &amp;&amp; elem.tagName !== 'style') {
+      ret += exports.text(elem.children);
+    }
+  }
+
+  return ret;
+};
+
+/**
+ * Parses a string into an array of DOM nodes. The `context` argument has no
+ * meaning for Cheerio, but it is maintained for API compatibility with jQuery.
+ */
+exports.parseHTML = function(data, context, keepScripts) {
+  var parsed;
+
+  if (!data || typeof data !== 'string') {
+    return null;
+  }
+
+  if (typeof context === 'boolean') {
+    keepScripts = context;
+  }
+
+  parsed = this.load(data, defaultOptions, false);
+  if (!keepScripts) {
+    parsed('script').remove();
+  }
+
+  // The `children` array is used by Cheerio internally to group elements that
+  // share the same parents. When nodes created through `parseHTML` are
+  // inserted into previously-existing DOM structures, they will be removed
+  // from the `children` array. The results of `parseHTML` should remain
+  // constant across these operations, so a shallow copy should be returned.
+  return parsed.root()[0].children.slice();
+};
+
+/**
+ * Sometimes you need to work with the top-level root element. To query it, you
+ * can use `$.root()`.
+ *
+ * ```js
+ * $.root().append('&lt;ul id="vegetables">&lt;/ul>').html();
+ * //=> &lt;ul id="fruits">...&lt;/ul>&lt;ul id="vegetables">&lt;/ul>
+ * ```
+ */
+exports.root = function() {
+  return this(this._root);
+};
+
+/**
+ * Checks to see if the `contained` DOM element is a descendant of the
+ * `container` DOM element.
+ */
+exports.contains = function(container, contained) {
+
+  // According to the jQuery API, an element does not "contain" itself
+  if (contained === container) {
+    return false;
+  }
+
+  // Step up the descendants, stopping when the root element is reached
+  // (signaled by `.parent` returning a reference to the same object)
+  while (contained &amp;&amp; contained !== contained.parent) {
+    contained = contained.parent;
+    if (contained === container) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+/**
+ * $.merge()
+ */
+
+exports.merge = function(arr1, arr2) {
+  if(!(isArrayLike(arr1) &amp;&amp; isArrayLike(arr2))){
+    return;
+  }
+  var newLength = arr1.length + arr2.length;
+  var i = 0;
+  while(i &lt; arr2.length){
+    arr1[i + arr1.length] = arr2[i];
+    i++;
+  }
+  arr1.length = newLength;
+  return arr1;
+};
+
+function isArrayLike(item){
+  if(Array.isArray(item)){
+    return true;
+  }
+  if(typeof item !== 'object'){
+    return false;
+  }
+  if(!item.hasOwnProperty('length')){
+    return false;
+  }
+  if(typeof item.length !== 'number') {
+    return false;
+  }
+  if(item.length &lt; 0){
+    return false;
+  }
+  var i = 0;
+  while(i &lt; item.length){
+    if(!(i in item)){
+      return false;
+    }
+    i++;
+  }
+  return true;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-attributes.html">attributes</a></li><li><a href="module-forms.html">forms</a></li><li><a href="module-manipulation.html">manipulation</a></li><li><a href="module-static.html">static</a></li><li><a href="module-traversing.html">traversing</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Oct 29 2017 13:38:20 GMT-0400 (EDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
