@@ -330,6 +330,78 @@ describe('cheerio', function() {
     });
   });
 
+  describe('.html - deprecated API', function() {
+    it('() : of empty cheerio object should return null', function() {
+      // Note: the direct invocation of the Cheerio constructor function is
+      // also deprecated.
+      var q = $();
+      expect(q.html()).to.be(null);
+    });
+
+    it('(selector) : should return the outerHTML of the selected element', function() {
+      var q = $.load(fixtures.fruits);
+      expect(q.html('.pear')).to.equal('<li class="pear">Pear</li>');
+    });
+  });
+
+  describe('.xml  - deprecated API', function() {
+    it('() :  renders XML', function() {
+      var q = $.load('<foo></foo>', { xmlMode: true });
+      expect(q.xml()).to.equal('<foo/>');
+    });
+  });
+
+  describe('.text  - deprecated API', function() {
+    it('(cheerio object) : should return the text contents of the specified elements', function() {
+      var q = $.load('<a>This is <em>content</em>.</a>');
+      expect(q.text(q('a'))).to.equal('This is content.');
+    });
+
+    it('(cheerio object) : should omit comment nodes', function() {
+      var q = $.load('<a>This is <!-- a comment --> not a comment.</a>');
+      expect(q.text(q('a'))).to.equal('This is  not a comment.');
+    });
+
+    it('(cheerio object) : should include text contents of children recursively', function() {
+      var q = $.load(
+        '<a>This is <div>a child with <span>another child and <!-- a comment --> not a comment</span> followed by <em>one last child</em> and some final</div> text.</a>'
+      );
+      expect(q.text(q('a'))).to.equal(
+        'This is a child with another child and  not a comment followed by one last child and some final text.'
+      );
+    });
+
+    it('() : should return the rendered text content of the root', function() {
+      var q = $.load(
+        '<a>This is <div>a child with <span>another child and <!-- a comment --> not a comment</span> followed by <em>one last child</em> and some final</div> text.</a>'
+      );
+      expect(q.text()).to.equal(
+        'This is a child with another child and  not a comment followed by one last child and some final text.'
+      );
+    });
+
+    it('(cheerio object) : should omit script tags', function() {
+      var q = $.load('<script>console.log("test")</script>');
+      expect(q.text()).to.equal('');
+    });
+
+    it('(cheerio object) : should omit style tags', function() {
+      var q = $.load(
+        '<style type="text/css">.cf-hidden { display: none; } .cf-invisible { visibility: hidden; }</style>'
+      );
+      expect(q.text()).to.equal('');
+    });
+
+    it('(cheerio object) : should include text contents of children omiting style and script tags', function() {
+      var q = $.load(
+        '<body>Welcome <div>Hello, testing text function,<script>console.log("hello")</script></div><style type="text/css">.cf-hidden { display: none; }</style>End of messege</body>'
+      );
+      expect(q.text()).to.equal(
+        'Welcome Hello, testing text function,End of messege'
+      );
+    });
+  });
+
   describe('.load', function() {
     it('should generate selections as proper instances', function() {
       var q = $.load(fruits);
@@ -344,6 +416,13 @@ describe('cheerio', function() {
 
       expect(apple).to.have.length(1);
       expect(lis).to.have.length(3);
+    });
+
+    it('should be available as a static method on the "loaded" factory function (deprecated API)', function() {
+      var q = $.load(fruits);
+      var q2 = q.load('<div><p>Some <a>text</a>.</p></div>');
+
+      expect(q2('a')).to.have.length(1);
     });
 
     it('should allow loading a pre-parsed DOM', function() {
