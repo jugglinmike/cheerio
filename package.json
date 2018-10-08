@@ -1,17 +1,26 @@
 {
   "name": "cheerio",
   "version": "1.0.0-rc.2",
-  "description":
-    "Tiny, fast, and elegant implementation of core jQuery designed specifically for the server",
+  "description": "Tiny, fast, and elegant implementation of core jQuery designed specifically for the server",
   "author": "Matt Mueller <mattmuelle@gmail.com> (mat.io)",
   "license": "MIT",
-  "keywords": ["htmlparser", "jquery", "selector", "scraper", "parser", "html"],
+  "keywords": [
+    "htmlparser",
+    "jquery",
+    "selector",
+    "scraper",
+    "parser",
+    "html"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/cheeriojs/cheerio.git"
   },
   "main": "./index.js",
-  "files": ["index.js", "lib"],
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "engines": {
     "node": ">= 0.6"
   },
@@ -33,7 +42,7 @@
     "husky": "^0.14.3",
     "istanbul": "^0.4.3",
     "jquery": "^3.0.0",
-    "jsdoc": "^3.5.5",
+    "jsdoc": "git@github.com:cheeriojs/jsdoc.git#exports-mixin",
     "jsdom": "^11.6.2",
     "lint-staged": "^7.0.0",
     "mocha": "^5.0.4",
@@ -50,7 +59,14 @@
     "singleQuote": true
   },
   "lint-staged": {
-    "*.js": ["prettier --write", "eslint --fix", "git add"],
-    "*.json": ["prettier --write", "git add"]
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }
